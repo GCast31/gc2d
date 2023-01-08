@@ -1,23 +1,24 @@
 
-use crate::{window::Window, graphics::Graphics, event::Event, context::Context};
+use crate::{window::Window, graphics::Graphics, event::Event, context::Context, fonts::FontsManager};
 
 
-pub struct Gc2d {
+pub struct Gc2d<'a> {
    pub window: Window,
-   pub graphics: Graphics,
+   pub graphics: Graphics<'a>,
    pub event: Event,
-   pub context: Context,
+   _context: Context,
 }
 
-impl Gc2d {
+impl<'a> Gc2d<'a> {
     pub fn new() -> Self {
-        let window = Window::default();
         let context: Context = Context::new();
         let event: Event = Event::new(&context);
-        let graphics: Graphics = Graphics::new(&window, &context);
+        let window = Window::new();
+        let graphics: Graphics = Graphics::new(&context, &window);
+
         Self {
             window,
-            context,
+            _context: context,
             event,
             graphics,
         }

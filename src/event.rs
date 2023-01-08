@@ -5,26 +5,27 @@ use sdl2::EventPump;
 use crate::{gc2d::Gc2d, context::Context};
 
 
+#[derive(Debug)]
 pub enum EventError {
 
 }
 
-pub trait GameLoop {
-    fn load(&mut self) -> Result<(), EventError> {
+pub trait EventLoop {
+    fn load(&mut self, gc2d: &'static mut Gc2d) -> Result<(), EventError> {
         Ok(())
     }
 
-    fn draw(&mut self, gc2d: &mut Gc2d) -> Result<(), EventError> {
+    fn draw(&mut self, gc2d: &'static mut Gc2d) -> Result<(), EventError> {
         Ok(())
     }
 
-    fn update(&mut self, gc2d: &mut Gc2d, dt: f32) -> Result<(), EventError> {
+    fn update(&mut self, gc2d: &'static mut Gc2d, dt: f32) -> Result<(), EventError> {
         Ok(())
     }
 }
 
 pub struct Event {
-    pub event_pump: EventPump,
+    event_pump: EventPump,
 }
 
 impl Event {
@@ -34,9 +35,11 @@ impl Event {
         }
     }
 
-    pub fn run(mut game: impl GameLoop, mut gc2d: Gc2d) -> Result<(), EventError>{
+    pub fn run(mut game: impl EventLoop + 'static, mut gc2d: Gc2d) -> Result<(), EventError>{
 
-        game.load()?;
+        game.load(&mut gc2d)?;
+
+        gc2d.window.update(&mut gc2d.graphics);
         
         let mut timer_start: Instant = Instant::now();
 
@@ -59,6 +62,13 @@ impl Event {
             let dt: f32 = timer_start.elapsed().as_secs_f32();
             timer_start = Instant::now();
             game.update(&mut gc2d, dt)?;
+
+            // Drawing
+            game.draw(&mut gc2d)?;
+
+            // End
+            gc2d.graphics.end_draw();
+
         }
 
         Ok(())
