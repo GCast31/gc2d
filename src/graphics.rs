@@ -1,7 +1,9 @@
 
-use sdl2::render::Canvas;
-use crate::{context::Context, color::Color, fonts::{FontsManager, FontDetail}, image::{ImageType, ImageDescriptions, Image}};
+use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
+use crate::{context::Context, color::Color, fonts::{FontsManager, FontKey}, image::{ImageType, ImageDescriptions, Image}};
 
+
+pub type FontsCreator = TextureCreator<WindowContext>;
 
 #[allow(dead_code)]
 pub enum DrawMode {
@@ -9,11 +11,10 @@ pub enum DrawMode {
     Line,
 }
 
-pub struct Graphics<'a> {
+pub struct Graphics {
     pub(crate) canvas: Canvas<sdl2::video::Window>,
 
-    fonts: FontsManager<'a, 'a>,
-    actual_font: Option<FontDetail>,
+    actual_font: Option<FontKey>,
 
     actual_color: Color,
     background_color: Color,
@@ -23,7 +24,7 @@ pub struct Graphics<'a> {
     actual_sy: f32,
 }
 
-impl Graphics<'_> {
+impl Graphics {
     //=======================================================================
     //                               GENERAL
     //=======================================================================
@@ -43,19 +44,28 @@ impl Graphics<'_> {
         canvas.clear();
         canvas.present();
 
-        // Create font manager
-        let fonts = FontsManager::new(&canvas);
-
         Graphics { 
             canvas,  
             actual_color: Color::WHITE,
             default_color: Color::WHITE,
             background_color: Color::BLACK,
-            fonts,
             actual_font: None,
             actual_sx: 1.,
             actual_sy: 1.,
         }
+    }
+
+    pub fn get_canvas_ref_mut(&mut self) -> &mut Canvas<sdl2::video::Window> {
+        &mut self.canvas
+    }
+
+    /***********************************************************
+     * get_fonts_creator
+     *
+     * @Brief : Create a texture for fonts
+     */
+    pub fn get_fonts_creator(&mut self) -> FontsCreator {
+        self.canvas.texture_creator() as FontsCreator
     }
 
     /***********************************************************
@@ -225,15 +235,11 @@ impl Graphics<'_> {
     //=======================================================================
     //                             FONTS
     //=======================================================================
-    pub fn new_font(&'static mut self, filename: String, point_size: u16) {
-        self.fonts.new_font(filename, point_size).unwrap();
+    pub fn set_font(&mut self, font: Option<FontKey>) {
+        self.actual_font = font; 
     }
 
-    pub fn set_font(&'static mut self, filename: String, point_size: u16) {
-        self.actual_font = Some(self.fonts.new_font(filename, point_size).unwrap()); 
-    }
-
-    pub fn print(&mut self, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>) {
+    pub fn print(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>) {
         // Only if font is set
         if let Some(font) = &self.actual_font {
 
@@ -245,8 +251,8 @@ impl Graphics<'_> {
                                 };
 
            // Create an texture from Text
-           let texture = self.fonts.get_texture(&font, text, &l_color); 
-
+           let texture = fonts.get_texture(&font, text, &l_color); 
+         
            // Create an image from Texture
            let image = Image::from_texture(texture.unwrap());
 
