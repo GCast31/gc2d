@@ -1,6 +1,6 @@
 use std::time::{Instant, Duration};
 
-use sdl2::EventPump;
+use sdl2::{EventPump, ttf::Sdl2TtfContext};
 
 use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager, FontContext}};
 
@@ -15,7 +15,7 @@ pub trait EventLoop {
         Ok(())
     }
 
-    fn draw(&mut self, gc2d: &mut Gc2d) -> Result<(), EventError> {
+    fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut FontsManager) -> Result<(), EventError> {
         Ok(())
     }
 
@@ -27,7 +27,7 @@ pub trait EventLoop {
 
 
 pub struct Event {
-    pub(crate) event_pump: EventPump,
+    pub event_pump: EventPump,
 }
 
 impl Event {

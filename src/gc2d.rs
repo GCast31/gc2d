@@ -1,55 +1,68 @@
 
-use std::time::{Instant, Duration};
+use std::{time::{Instant, Duration}, rc::Rc, collections::HashMap};
 
-use crate::{window::Window, graphics::{Graphics, self}, event::{Event, EventLoop, EventError}, context::Context, fonts::{FontsManager, FontContext}};
+use crate::{window::Window, graphics::{Graphics, self}, event::{Event, EventLoop, EventError}, context::Context, fonts::{FontsManager, FontContext, Font}};
 
 
-pub struct Gc2d<'a> {
+pub struct Gc2d {
+   _context: Context,
+
    pub window: Window,
    pub graphics: Graphics,
    pub event: Event,
-   _context: Context,
-   pub fonts: FontsManager<'a, 'a>,
 
    pub max_fps: u32,
 }
 
-impl Gc2d<'_> {
+impl Gc2d {
     pub fn new() -> Self {
+        
         let context: Context = Context::new();
         let event: Event = Event::new(&context);
         let window = Window::new();
-        let mut graphics: Graphics = Graphics::new(&context, &window);
-        let fc = graphics.get_fonts_creator();
-        let fonts = FontsManager::new(fc);
+        let graphics: Graphics = Graphics::new(&context, &window);
+
 
         Self {
-            window,
             _context: context,
+            window,
             event,
             graphics,
-            fonts,
             max_fps: 60,
         }
     }
 
-    pub fn create_fonts_context() -> FontContext<'static> {
-        sdl2::ttf::init().unwrap() as FontContext
+    pub fn set_max_fps(&mut self, fps: u32) {
+        self.max_fps = fps;
     }
-    
+
+
     pub fn run(&mut self, mut game: impl EventLoop) -> Result<(), EventError>{
 
-        game.load(self)?;
+        // Initialize font context
+        let ttf_context = sdl2::ttf::init().unwrap();
 
+        // Create fonts manager
+        let mut fonts_manager = FontsManager::new();
+    
+        game.load(self)?;
+    
         self.window.update(&mut self.graphics);
         
         let mut timer_start: Instant = Instant::now();
-
+    
         // Main loop
         'mainloop: loop {
+
+            // Add new fonts ?
+            for font in self.graphics._new_fonts.iter() {
+                fonts_manager.new_font(&ttf_context, font.clone()).unwrap();
+            }
+            self.graphics._new_fonts.clear();
+
             // Before drawing
             self.graphics.begin_draw();
-
+    
             // Keys
             for event in self.event.event_pump.poll_iter() {
                 match event {
@@ -59,15 +72,15 @@ impl Gc2d<'_> {
                     _ => {},
                 }
             }
-
+    
             // Update
             let dt: f32 = timer_start.elapsed().as_secs_f32();
             timer_start = Instant::now();
             game.update(self, dt)?;
-
+    
             // Drawing
-            game.draw(self)?;
-
+            game.draw(self, &mut fonts_manager)?;
+    
             // End
             self.graphics.end_draw();
             
@@ -76,12 +89,9 @@ impl Gc2d<'_> {
                 ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / self.max_fps));
             }
         }
-
+    
         Ok(())
     }
 
-    pub fn set_max_fps(&mut self, fps: u32) {
-        self.max_fps = fps;
-    }
-
 }
+

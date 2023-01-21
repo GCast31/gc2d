@@ -1,6 +1,8 @@
 
+use std::collections::HashMap;
+
 use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
-use crate::{context::Context, color::Color, fonts::{FontsManager, FontKey}, image::{ImageType, ImageDescriptions, Image}};
+use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image}};
 
 
 pub type FontsCreator = TextureCreator<WindowContext>;
@@ -14,7 +16,9 @@ pub enum DrawMode {
 pub struct Graphics {
     pub(crate) canvas: Canvas<sdl2::video::Window>,
 
-    actual_font: Option<FontKey>,
+    pub(crate) _new_fonts: Vec<Font>,
+
+    actual_font: Option<Font>,
 
     actual_color: Color,
     background_color: Color,
@@ -52,6 +56,8 @@ impl Graphics {
             actual_font: None,
             actual_sx: 1.,
             actual_sy: 1.,
+
+            _new_fonts: Vec::new(),
         }
     }
 
@@ -59,12 +65,13 @@ impl Graphics {
         &mut self.canvas
     }
 
+
     /***********************************************************
      * get_fonts_creator
      *
      * @Brief : Create a texture for fonts
      */
-    pub fn get_fonts_creator(&mut self) -> FontsCreator {
+    pub fn get_fonts_creator(&self) -> FontsCreator {
         self.canvas.texture_creator() as FontsCreator
     }
 
@@ -73,7 +80,7 @@ impl Graphics {
      *
      * @brief : Prepare to drawing, call before drawing
      **********************************************************/
-    pub(crate) fn begin_draw(&mut self) {
+    pub fn begin_draw(&mut self) {
         self.set_color(self.background_color);
         self.canvas.clear();
         self.apply_default_color();
@@ -84,7 +91,7 @@ impl Graphics {
      *
      * @brief : Call after drawing
      **********************************************************/
-     pub(crate) fn end_draw(&mut self) {
+     pub fn end_draw(&mut self) {
         self.canvas.present();
     }
 
@@ -235,11 +242,20 @@ impl Graphics {
     //=======================================================================
     //                             FONTS
     //=======================================================================
-    pub fn set_font(&mut self, font: Option<FontKey>) {
+    pub fn new_font(&mut self, filename: &str, point_size: u16) -> Font {
+        let font = Font {
+                filename: String::from(filename),
+                point_size
+        };
+        self._new_fonts.push(font.clone());
+        font
+    }
+
+    pub fn set_font(&mut self, font: Option<Font>) {
         self.actual_font = font; 
     }
 
-    pub fn print(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>) {
+    pub fn print_full(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>) {
         // Only if font is set
         if let Some(font) = &self.actual_font {
 
@@ -251,7 +267,8 @@ impl Graphics {
                                 };
 
            // Create an texture from Text
-           let texture = fonts.get_texture(&font, text, &l_color); 
+           let font_creator = self.get_fonts_creator();
+           let texture = fonts.get_texture(&font_creator, &font, text, &l_color); 
          
            // Create an image from Texture
            let image = Image::from_texture(texture.unwrap());
@@ -259,6 +276,10 @@ impl Graphics {
            // Draw text
            self.draw_image(ImageType::FromTexture, &image, x, y, angle, scale_x, scale_y, origin_x, origin_y);
         }
+    }
+
+    pub fn print(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, color: Option<Color>) {
+        self.print_full(fonts, text, x, y, 0f64, 1f32, 1f32, 0f32, 0f32, color);
     }
 
 }
