@@ -1,6 +1,4 @@
 
-use std::collections::HashMap;
-
 use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
 use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image}};
 
@@ -80,7 +78,7 @@ impl Graphics {
      *
      * @brief : Prepare to drawing, call before drawing
      **********************************************************/
-    pub fn begin_draw(&mut self) {
+    pub(crate) fn begin_draw(&mut self) {
         self.set_color(self.background_color);
         self.canvas.clear();
         self.apply_default_color();
@@ -91,7 +89,7 @@ impl Graphics {
      *
      * @brief : Call after drawing
      **********************************************************/
-     pub fn end_draw(&mut self) {
+     pub(crate) fn end_draw(&mut self) {
         self.canvas.present();
     }
 
@@ -277,7 +275,7 @@ impl Graphics {
            self.draw_image(ImageType::FromTexture, &image, x, y, angle, scale_x, scale_y, origin_x, origin_y);
         }
     }
-
+    
     pub fn print(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, color: Option<Color>) {
         self.print_full(fonts, text, x, y, 0f64, 1f32, 1f32, 0f32, 0f32, color);
     }

@@ -1,7 +1,7 @@
 
-use std::{time::{Instant, Duration}, rc::Rc, collections::HashMap};
+use std::time::{Instant, Duration};
 
-use crate::{window::Window, graphics::{Graphics, self}, event::{Event, EventLoop, EventError}, context::Context, fonts::{FontsManager, FontContext, Font}};
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager};
 
 
 pub struct Gc2d {
@@ -11,7 +11,7 @@ pub struct Gc2d {
    pub graphics: Graphics,
    pub event: Event,
 
-   pub max_fps: u32,
+   max_fps: u32,
 }
 
 impl Gc2d {

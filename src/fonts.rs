@@ -1,8 +1,8 @@
 
-use std::{collections::HashMap, rc::Rc, marker::PhantomData, cell::RefCell};
-use sdl2::{render::{Texture, Canvas, TextureCreator}, video::Window, ttf::Sdl2TtfContext};
+use std::collections::HashMap;
+use sdl2::{render::{Texture, TextureCreator}, ttf::Sdl2TtfContext};
 
-use crate::{color::Color, graphics::{Graphics, FontsCreator}};
+use crate::color::Color;
 
 pub type FontContext<'a> = sdl2::ttf::Sdl2TtfContext;
 pub type FontStyle = sdl2::ttf::FontStyle;
@@ -40,7 +40,7 @@ impl<'ttf, 'rwops> FontsManager<'ttf, 'rwops> {
 
       if let Some(detail) = self.fonts.get_mut(&font_key) {
         
-        let mut font = detail.as_mut();
+        let font = detail.as_mut();
 
         font.set_style(FontStyle::NORMAL);
 

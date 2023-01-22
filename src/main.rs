@@ -1,6 +1,4 @@
-use std::time::{Instant, Duration};
-
-use gc2d::{self, event::EventLoop, event::Event, gc2d::Gc2d, color::Color, fonts::{FontsManager, Font}};
+use gc2d::{self, event::EventLoop, gc2d::Gc2d, color::Color, fonts::{FontsManager, Font}};
 
 //------------------------------------------------------------------
 //                                 MAIN
@@ -9,7 +7,7 @@ fn main() {
 
     Gc2d::new().run(
         Game {
-
+            ..Default::default()
         })
         .unwrap();
 
@@ -20,6 +18,15 @@ fn main() {
 //                                 EXAMPLE
 //------------------------------------------------------------------
 struct Game {
+    x: f32,
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        Game {
+            x: 0f32,
+        }
+    }
 }
 
 impl EventLoop for Game {
@@ -38,13 +45,13 @@ impl EventLoop for Game {
         gc2d.graphics.set_color(Color::BLUE);
         gc2d.graphics.line(10., 100., 150., 100., None);
 
-        gc2d.graphics.print(fonts, String::from("Coucou"), 10f32, 10f32, Some(Color::BLUE));
+        gc2d.graphics.print(fonts, String::from("Coucou"), self.x, 10f32, Some(Color::BLUE));
 
         Ok(())
     }
 
     fn update(&mut self, gc2d: &mut Gc2d, dt: f32) -> Result<(), gc2d::event::EventError> {
-        
+        self.x += 10f32 * dt;
         Ok(())
     }
 }

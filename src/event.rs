@@ -1,8 +1,7 @@
-use std::time::{Instant, Duration};
 
-use sdl2::{EventPump, ttf::Sdl2TtfContext};
+use sdl2::EventPump;
 
-use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager, FontContext}};
+use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager}};
 
 
 #[derive(Debug)]
