@@ -1,57 +1,29 @@
-use gc2d::{self, event::EventLoop, gc2d::Gc2d, color::Color, fonts::{FontsManager, Font}};
 
-//------------------------------------------------------------------
-//                                 MAIN
-//------------------------------------------------------------------
-fn main() {
+use gc2d::color::Color;
+use gc2d::gc2d::Gc2d;
+use gc2d::event::EventLoop;
 
-    Gc2d::new().run(
-        Game {
-            ..Default::default()
-        })
-        .unwrap();
+struct MyTestApp {
 
 }
 
-
-//------------------------------------------------------------------
-//                                 EXAMPLE
-//------------------------------------------------------------------
-struct Game {
-    x: f32,
-}
-
-impl Default for Game {
-    fn default() -> Self {
-        Game {
-            x: 0f32,
-        }
-    }
-}
-
-impl EventLoop for Game {
+impl EventLoop for MyTestApp {
     fn load(&mut self, gc2d: &mut Gc2d) -> Result<(), gc2d::event::EventError> {
-
-        gc2d.window.set_title("My Title");
-        gc2d.window.set_size(1024., 980.);
-
-        gc2d.graphics.new_font("fonts/Vera.ttf", 20);
-        gc2d.graphics.set_font(Some(Font { filename: String::from("fonts/Vera.ttf"), point_size: 20 }));
+        gc2d.window.set_title("MyApp");
 
         Ok(())
     }
 
-    fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut FontsManager) -> Result<(), gc2d::event::EventError> {
-        gc2d.graphics.set_color(Color::BLUE);
-        gc2d.graphics.line(10., 100., 150., 100., None);
-
-        gc2d.graphics.print(fonts, String::from("Coucou"), self.x, 10f32, Some(Color::BLUE));
+    fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut gc2d::fonts::FontsManager) -> Result<(), gc2d::event::EventError> {
+        gc2d.graphics.rectangle(gc2d::graphics::DrawMode::Fill, 10f32, 10f32, 50f32, 50f32, Some(Color::RED));
 
         Ok(())
     }
+}
 
-    fn update(&mut self, gc2d: &mut Gc2d, dt: f32) -> Result<(), gc2d::event::EventError> {
-        self.x += 10f32 * dt;
-        Ok(())
-    }
+fn main() {
+    Gc2d::new()
+        .run(MyTestApp {
+
+        }).unwrap();
 }
