@@ -1,6 +1,6 @@
 
 use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
-use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image}};
+use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image, ImagesManager}};
 
 
 pub type FontsCreator = TextureCreator<WindowContext>;
@@ -12,16 +12,22 @@ pub enum DrawMode {
 }
 
 pub struct Graphics {
+    // Général
     pub(crate) canvas: Canvas<sdl2::video::Window>,
 
+    // Fonts
     pub(crate) _new_fonts: Vec<Font>,
-
     actual_font: Option<Font>,
 
+    // Images
+    images: ImagesManager,
+
+    // Color
     actual_color: Color,
     background_color: Color,
     default_color: Color,
 
+    // Transformations
     actual_sx: f32,
     actual_sy: f32,
 }
@@ -46,6 +52,8 @@ impl Graphics {
         canvas.clear();
         canvas.present();
 
+        let images: ImagesManager = ImagesManager::new(canvas.texture_creator());
+
         Graphics { 
             canvas,  
             actual_color: Color::WHITE,
@@ -56,6 +64,7 @@ impl Graphics {
             actual_sy: 1.,
 
             _new_fonts: Vec::new(),
+            images,
         }
     }
 

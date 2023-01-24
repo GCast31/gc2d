@@ -5,33 +5,25 @@ use std::collections::HashMap;
  *                         _ I M A G E
  *================================================================*/
  pub trait ImageDescriptions {
-    fn get_filename(&self) -> String;
     fn get_quad(&self) -> Option<Quad>;
     fn get_width(&self) -> f32;
     fn get_height(&self) -> f32;
 }
 
 #[derive(Clone)]
-pub(crate) enum ImageType<'a> {
-    ImageFromFile(&'a str),
+pub(crate) enum ImageType {
+    ImageFromFile,
     FromTexture,
 }
 
- pub struct Image<'a> {
-    image_type: ImageType<'a>,
+ pub struct Image {
+    image_type: ImageType,
     width: f32,
     height: f32,
     pub(crate) texture: sdl2::render::Texture,
 }
 
-impl<'a> ImageDescriptions for Image<'a> {
-
-    fn get_filename(&self) -> String {
-        match self.image_type {
-            ImageType::ImageFromFile(filename) => String::from(filename),
-            _ => String::new(), 
-        }
-    }
+impl ImageDescriptions for Image {
 
     fn get_quad(&self) -> Option<Quad> {
         Option::None
@@ -46,7 +38,7 @@ impl<'a> ImageDescriptions for Image<'a> {
     }
 }
 
-impl<'a> Image<'a> {
+impl Image {
     pub(crate) fn from_texture(texture: sdl2::render::Texture) -> Self {
         let height = texture.query().height as f32;
         let width = texture.query().width as f32;
@@ -83,10 +75,6 @@ impl Quad {
 }
 
 impl ImageDescriptions for Quad {
-
-    fn get_filename(&self) -> String {
-        self.filename.clone()
-    }
     fn get_quad(&self) -> Option<Quad> {
         Some(Quad {
             filename: self.filename.clone(),
@@ -107,19 +95,19 @@ impl ImageDescriptions for Quad {
 //=======================================================================
 //                            Images MANAGER
 //=======================================================================
-pub(in super) struct ImagesManager<'a> {
+pub(crate) struct ImagesManager {
     texture_creator: sdl2::render::TextureCreator<sdl2::video::WindowContext>,
-    images: HashMap<String, Image<'a>>,
+    images: HashMap<String, Image>,
 }
 
 #[allow(dead_code)]
-impl<'a> ImagesManager<'a> {
+impl ImagesManager {
     /*
      * new()
      * 
      * @Brief : Create a new ImagesManager
      */
-    pub(crate) fn new(texture_creator: sdl2::render::TextureCreator<sdl2::video::WindowContext>) -> ImagesManager<'a> {
+    pub(crate) fn new(texture_creator: sdl2::render::TextureCreator<sdl2::video::WindowContext>) -> ImagesManager {
         ImagesManager {
             texture_creator,
             images: HashMap::new(),
@@ -131,7 +119,7 @@ impl<'a> ImagesManager<'a> {
      * 
      * @Brief : Try to load a new image in the images manager
      */
-    pub(crate) fn new_image(&mut self, filename: &'a str) -> Result<(), String> {
+    pub(crate) fn new_image(&mut self, filename: &str) -> Result<(), String> {
 
         if let Some(_) = self.images.get_mut(&filename.to_string()) {
             return Ok(());
@@ -152,7 +140,7 @@ impl<'a> ImagesManager<'a> {
         let width = texture.query().width as f32;
 
         let image = Image {
-            image_type: ImageType::ImageFromFile(filename.clone()),
+            image_type: ImageType::ImageFromFile,
             width,
             height,
             texture,
