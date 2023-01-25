@@ -193,7 +193,28 @@ impl Graphics {
     //=======================================================================
     //                             IMAGES
     //=======================================================================
-    pub(crate) fn draw_image(&mut self, image_type: ImageType, image: &Image, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32) {
+    pub fn new_image(&mut self, filename: &str) -> Result<(), String> {
+        self.images.new_image(filename)
+    }
+
+    pub fn draw(&mut self, filename: &str, x: f32, y: f32, angle: f64) {
+        self.draw_image(ImageType::ImageFromFile(String::from(filename)), None, x, y, angle, 1f32, 1f32, 0f32, 0f32);
+    }
+
+    pub(crate) fn draw_image(&mut self, image_type: ImageType, image: Option<&Image>, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32) {
+
+        let image = match (image_type ,image ) {
+            (_, Some(i)) => Some(i),
+            (ImageType::ImageFromFile(f), _) => self.images.get_image(f.as_str()),
+            (_, _) => return,
+        };
+
+        if image.is_none() {
+            return;
+        }
+
+        let image = image.unwrap();
+
         let mut scalex = scale_x * self.actual_sx;
         let mut scaley = scale_y * self.actual_sy;
 
@@ -278,10 +299,10 @@ impl Graphics {
            let texture = fonts.get_texture(&font_creator, &font, text, &l_color); 
          
            // Create an image from Texture
-           let image = Image::from_texture(texture.unwrap());
+           let mut image = Image::from_texture(texture.unwrap());
 
            // Draw text
-           self.draw_image(ImageType::FromTexture, &image, x, y, angle, scale_x, scale_y, origin_x, origin_y);
+           self.draw_image(ImageType::FromTexture, Some(&image), x, y, angle, scale_x, scale_y, origin_x, origin_y);
         }
     }
     

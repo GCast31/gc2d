@@ -15,7 +15,7 @@ impl EventLoop for MyTestApp {
     }
 
     fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut gc2d::fonts::FontsManager) -> Result<(), gc2d::event::EventError> {
-        gc2d.graphics.rectangle(gc2d::graphics::DrawMode::Fill, 10f32, 10f32, 50f32, 50f32, Some(Color::RED));
+
 
         Ok(())
     }

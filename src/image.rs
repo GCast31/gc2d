@@ -12,12 +12,11 @@ use std::collections::HashMap;
 
 #[derive(Clone)]
 pub(crate) enum ImageType {
-    ImageFromFile,
+    ImageFromFile(String),
     FromTexture,
 }
 
  pub struct Image {
-    image_type: ImageType,
     width: f32,
     height: f32,
     pub(crate) texture: sdl2::render::Texture,
@@ -46,7 +45,6 @@ impl Image {
             texture,
             height,
             width,
-            image_type: ImageType::FromTexture,
         }
     }
 }
@@ -140,13 +138,12 @@ impl ImagesManager {
         let width = texture.query().width as f32;
 
         let image = Image {
-            image_type: ImageType::ImageFromFile,
             width,
             height,
             texture,
         };
 
-        self.images.insert(filename.to_string(), image).unwrap();
+        self.images.insert(filename.to_string(), image);
         
         Ok(())
     
