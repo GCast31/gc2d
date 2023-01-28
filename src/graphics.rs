@@ -17,7 +17,7 @@ pub struct Graphics {
 
     // Fonts
     pub(crate) _new_fonts: Vec<Font>,
-    actual_font: Option<Font>,
+    pub(crate) actual_font: Option<Font>,
 
     // Images
     images: ImagesManager,

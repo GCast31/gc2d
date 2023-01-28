@@ -54,10 +54,21 @@ impl Gc2d {
         // Main loop
         'mainloop: loop {
 
+            let mut font_clone = None;
+
             // Add new fonts ?
             for font in self.graphics._new_fonts.iter() {
                 fonts_manager.new_font(&ttf_context, font.clone()).unwrap();
+                if self.graphics.actual_font.is_none() && font_clone.is_none() {
+                    font_clone = Some(font.clone());
+                }
+                
             }
+
+            if self.graphics.actual_font.is_none() && font_clone.is_some() {
+                self.graphics.set_font(font_clone);
+            }
+
             self.graphics._new_fonts.clear();
 
             // Before drawing
