@@ -7,8 +7,56 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/<executable file>",
+            "name": "Debug unit tests in library 'gc2d'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=gc2d"
+                ],
+                "filter": {
+                    "name": "gc2d",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'gc2d'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=gc2d",
+                    "--package=gc2d"
+                ],
+                "filter": {
+                    "name": "gc2d",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'gc2d'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=gc2d",
+                    "--package=gc2d"
+                ],
+                "filter": {
+                    "name": "gc2d",
+                    "kind": "bin"
+                }
+            },
             "args": [],
             "cwd": "${workspaceFolder}"
         }
