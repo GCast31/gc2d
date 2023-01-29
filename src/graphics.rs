@@ -1,5 +1,5 @@
 
-use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
+use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext, rect::Rect};
 use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image, ImagesManager}};
 
 
@@ -42,6 +42,7 @@ impl Graphics {
         /* Create the window */
         let window = video_subsystem
             .window(window.title.as_str(), window.width as u32, window.height as u32)
+            .opengl()
             .position_centered()
             .build()
             .unwrap();
