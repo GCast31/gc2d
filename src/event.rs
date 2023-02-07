@@ -1,7 +1,7 @@
 
 use sdl2::EventPump;
 
-use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager}};
+use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager}, keyboard::KeyCode};
 
 
 #[derive(Debug)]
@@ -19,6 +19,14 @@ pub trait EventLoop {
     }
 
     fn update(&mut self, gc2d: &mut Gc2d, dt: f32) -> Result<(), EventError> {
+        Ok(())
+    }
+
+    fn key_pressed(&mut self, gc2d: &mut Gc2d, key: KeyCode) -> Result<(), EventError> {
+        Ok(())
+    }
+
+    fn key_released(&mut self, gc2d: &mut Gc2d, key: KeyCode) -> Result<(), EventError> {
         Ok(())
     }
 }

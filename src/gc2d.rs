@@ -1,7 +1,7 @@
 
-use std::time::{Instant, Duration};
+use std::{time::{Instant, Duration}};
 
-use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager};
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard};
 
 
 pub struct Gc2d {
@@ -10,6 +10,7 @@ pub struct Gc2d {
    pub window: Window,
    pub graphics: Graphics,
    pub event: Event,
+   pub keyboard: Keyboard,
 
    max_fps: u32,
 }
@@ -21,6 +22,7 @@ impl Gc2d {
         let event: Event = Event::new(&context);
         let window = Window::new();
         let graphics: Graphics = Graphics::new(&context, &window);
+        let keyboard: Keyboard = Keyboard::new();
 
 
         Self {
@@ -29,6 +31,7 @@ impl Gc2d {
             event,
             graphics,
             max_fps: 60,
+            keyboard,
         }
     }
 
@@ -74,6 +77,9 @@ impl Gc2d {
             // Before drawing
             self.graphics.begin_draw();
     
+            // Update keyboard
+            self.keyboard.update(&self.event.event_pump);
+
             // Keys
             for event in self.event.event_pump.poll_iter() {
                 match event {
@@ -82,6 +88,16 @@ impl Gc2d {
                     },
                     _ => {},
                 }
+            }
+
+            // Key Just pressed
+            for key in self.keyboard.get_keys_just_pressed() {
+                game.key_pressed(self, key)?;
+            }
+
+            // Key Just released
+            for key in self.keyboard.get_keys_just_released() {
+                game.key_released(self, key)?;
             }
     
             // Update
