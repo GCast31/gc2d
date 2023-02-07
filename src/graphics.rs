@@ -33,6 +33,11 @@ pub struct Graphics {
 }
 
 impl Graphics {
+
+    fn distance_euclidienne(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {
+        ((x1 - x2).powf(2.) + (y1 - y2).powf(2.)).sqrt()
+    }
+
     //=======================================================================
     //                               GENERAL
     //=======================================================================
@@ -182,6 +187,41 @@ impl Graphics {
             self.set_color(actual_color);
         }
     }
+
+    /***********************************************************
+     * circle()
+     *
+     * @brief : Draw a circle
+     */
+    pub fn circle(&mut self, mode: DrawMode, x_center: f32, y_center: f32, radius: f32, color: Option<Color>) {
+
+        let actual_color = self.actual_color;
+
+        if let Some(color) = color {
+            self.set_color(color);
+        }
+
+        for x in (x_center - radius) as i32..=(x_center + radius) as i32 {
+            for y in (y_center - radius) as i32..=(y_center + radius) as i32 {
+
+                let distance = Graphics::distance_euclidienne(x_center, y_center, x as f32, y as f32);
+
+                if distance <= radius {
+                    if match mode { DrawMode::Fill => true, _ => false } || distance == radius {
+                        self.canvas
+                        .draw_point(sdl2::rect::Point::new(x, y))
+                        .unwrap()
+                    }
+                }
+
+            }
+        }
+
+        if let Some(_) = color {
+            self.set_color(actual_color);
+        }
+    }
+
 
     //=======================================================================
     //                             SCALE
