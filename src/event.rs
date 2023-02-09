@@ -1,7 +1,7 @@
 
 use sdl2::EventPump;
 
-use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager}, keyboard::KeyCode};
+use crate::{gc2d::Gc2d, context::Context, fonts::{FontsManager}, keyboard::KeyCode, audio::AudioManager};
 
 
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub enum EventError {
 }
 
 pub trait EventLoop {
-    fn load(&mut self, gc2d: &mut Gc2d) -> Result<(), EventError> {
+    fn load(&mut self, gc2d: &mut Gc2d, audio_manager: &mut AudioManager) -> Result<(), EventError> {
         Ok(())
     }
 
@@ -18,7 +18,7 @@ pub trait EventLoop {
         Ok(())
     }
 
-    fn update(&mut self, gc2d: &mut Gc2d, dt: f32) -> Result<(), EventError> {
+    fn update(&mut self, gc2d: &mut Gc2d, dt: f32, audio_manager: &mut AudioManager) -> Result<(), EventError> {
         Ok(())
     }
 

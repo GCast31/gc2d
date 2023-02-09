@@ -1,8 +1,32 @@
 
-use std::{time::{Instant, Duration}};
+use std::time::Instant;
 
-use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard};
+use sdl2::{audio::{AudioCallback}, mixer::{Music, InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS} };
 
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::{AudioManager, AudioSource}};
+use crate::audio::Audio;
+
+struct SquareWave {
+    phase_inc: f32,
+    phase: f32,
+    volume: f32
+}
+
+impl AudioCallback for SquareWave {
+    type Channel = f32;
+
+    fn callback(&mut self, out: &mut [f32]) {
+        // Generate a square wave
+        for x in out.iter_mut() {
+            *x = if self.phase <= 0.5 {
+                self.volume
+            } else {
+                -self.volume
+            };
+            self.phase = (self.phase + self.phase_inc) % 1.0;
+        }
+    }
+}
 
 pub struct Gc2d {
    _context: Context,
@@ -11,6 +35,7 @@ pub struct Gc2d {
    pub graphics: Graphics,
    pub event: Event,
    pub keyboard: Keyboard,
+   pub audio: Audio,
 
    max_fps: u32,
 }
@@ -23,7 +48,7 @@ impl Gc2d {
         let window = Window::new();
         let graphics: Graphics = Graphics::new(&context, &window);
         let keyboard: Keyboard = Keyboard::new();
-
+        let audio: Audio = Audio::new(&context);
 
         Self {
             _context: context,
@@ -32,6 +57,7 @@ impl Gc2d {
             graphics,
             max_fps: 60,
             keyboard,
+            audio,
         }
     }
 
@@ -47,12 +73,16 @@ impl Gc2d {
 
         // Create fonts manager
         let mut fonts_manager = FontsManager::new();
+
+        // Create audio manager
+        let mut audio_manager: AudioManager = AudioManager::new();
     
-        game.load(self)?;
+        game.load(self, &mut audio_manager)?;
     
         self.window.update(&mut self.graphics);
         
         let mut timer_start: Instant = Instant::now();
+
     
         // Main loop
         'mainloop: loop {
@@ -65,14 +95,12 @@ impl Gc2d {
                 if self.graphics.actual_font.is_none() && font_clone.is_none() {
                     font_clone = Some(font.clone());
                 }
-                
             }
+            self.graphics._new_fonts.clear();
 
             if self.graphics.actual_font.is_none() && font_clone.is_some() {
                 self.graphics.set_font(font_clone);
             }
-
-            self.graphics._new_fonts.clear();
 
             // Before drawing
             self.graphics.begin_draw();
@@ -103,7 +131,7 @@ impl Gc2d {
             // Update
             let dt: f32 = timer_start.elapsed().as_secs_f32();
             timer_start = Instant::now();
-            game.update(self, dt)?;
+            game.update(self, dt, &mut audio_manager)?;
     
             // Drawing
             game.draw(self, &mut fonts_manager)?;

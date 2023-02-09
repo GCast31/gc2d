@@ -204,7 +204,7 @@ impl Graphics {
         for x in (x_center - radius) as i32..=(x_center + radius) as i32 {
             for y in (y_center - radius) as i32..=(y_center + radius) as i32 {
 
-                let distance = Graphics::distance_euclidienne(x_center, y_center, x as f32, y as f32);
+                let distance = Graphics::distance_euclidienne(x_center, y_center, x as f32, y as f32).round();
 
                 if distance <= radius {
                     if match mode { DrawMode::Fill => true, _ => false } || distance == radius {

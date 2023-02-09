@@ -1,4 +1,5 @@
 
+pub mod audio;
 pub mod context;
 pub mod color;
 pub mod event;

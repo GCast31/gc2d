@@ -11,4 +11,4 @@ time = "0.3.17"
 [dependencies.sdl2]
 version = "0.35.2"
 default-features = false
-features = ["unsafe_textures", "image", "ttf", "gfx"]
+features = ["unsafe_textures", "image", "ttf", "gfx", "mixer"]
