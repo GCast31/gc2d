@@ -1,5 +1,5 @@
 
-use std::time::Instant;
+use std::time::{Instant, Duration};
 
 use sdl2::{audio::{AudioCallback}, mixer::{Music, InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS} };
 
@@ -141,7 +141,7 @@ impl Gc2d {
             
             // Limit FPS
             if self.max_fps > 0 {
-                //::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / self.max_fps));
+                ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / self.max_fps));
             }
         }
     
