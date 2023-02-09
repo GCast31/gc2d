@@ -134,7 +134,7 @@ impl Gc2d {
             game.update(self, dt, &mut audio_manager)?;
     
             // Drawing
-            game.draw(self, &mut fonts_manager)?;
+            game.draw(self, &mut fonts_manager, dt)?;
     
             // End
             self.graphics.end_draw();

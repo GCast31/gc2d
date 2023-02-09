@@ -14,7 +14,7 @@ pub trait EventLoop {
         Ok(())
     }
 
-    fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut FontsManager) -> Result<(), EventError> {
+    fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut FontsManager, dt: f32) -> Result<(), EventError> {
         Ok(())
     }
 
