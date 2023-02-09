@@ -25,7 +25,7 @@ impl EventLoop for MyTestApp {
 
     fn draw(&mut self, gc2d: &mut Gc2d, fonts: &mut gc2d::fonts::FontsManager, dt: f32) -> Result<(), gc2d::event::EventError> {
         gc2d.graphics.circle(gc2d::graphics::DrawMode::Line, self.x, 50f32, 20f32, Some(Color::BLUE));
-        gc2d.graphics.print(fonts, format!("dt: {}", dt), 50f32, 50f32, Some(Color::RED));
+        gc2d.graphics.print(format!("dt: {}", dt), 50f32, 50f32, Some(Color::RED), fonts);
         Ok(())
     }
 

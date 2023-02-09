@@ -324,7 +324,7 @@ impl Graphics {
         self.actual_font = font; 
     }
 
-    pub fn print_full(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>) {
+    pub fn print_full(&mut self, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>, fonts: &mut FontsManager) {
         // Only if font is set
         if let Some(font) = &self.actual_font {
 
@@ -347,8 +347,8 @@ impl Graphics {
         }
     }
     
-    pub fn print(&mut self, fonts: &mut FontsManager, text: String, x: f32, y: f32, color: Option<Color>) {
-        self.print_full(fonts, text, x, y, 0f64, 1f32, 1f32, 0f32, 0f32, color);
+    pub fn print(&mut self, text: String, x: f32, y: f32, color: Option<Color>, fonts: &mut FontsManager, ) {
+        self.print_full(text, x, y, 0f64, 1f32, 1f32, 0f32, 0f32, color, fonts);
     }
 
 }
