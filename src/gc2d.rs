@@ -3,7 +3,7 @@ use std::time::{Instant, Duration};
 
 use sdl2::{audio::{AudioCallback}, mixer::{Music, InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS} };
 
-use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::{AudioManager, AudioSource}};
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::{AudioManager, AudioSource}, mouse::Mouse};
 use crate::audio::Audio;
 
 struct SquareWave {
@@ -36,6 +36,7 @@ pub struct Gc2d {
    pub event: Event,
    pub keyboard: Keyboard,
    pub audio: Audio,
+   pub mouse: Mouse,
 
    max_fps: u32,
 }
@@ -49,6 +50,7 @@ impl Gc2d {
         let graphics: Graphics = Graphics::new(&context, &window);
         let keyboard: Keyboard = Keyboard::new();
         let audio: Audio = Audio::new(&context);
+        let mouse = Mouse::new();
 
         Self {
             _context: context,
@@ -58,6 +60,7 @@ impl Gc2d {
             max_fps: 60,
             keyboard,
             audio,
+            mouse,
         }
     }
 
@@ -107,6 +110,9 @@ impl Gc2d {
     
             // Update keyboard
             self.keyboard.update(&self.event.event_pump);
+
+            // Update mouse
+            self.mouse.update(&self.event.event_pump);
 
             // Keys
             for event in self.event.event_pump.poll_iter() {

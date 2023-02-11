@@ -48,9 +48,10 @@ impl<'a> AudioManager<'a> {
 }
 
 pub struct Audio {
-    pub(crate) _mixer: Sdl2MixerContext,
-    pub(crate) _audio_subsystem: AudioSubsystem,
+    _mixer: Sdl2MixerContext,
+    _audio_subsystem: AudioSubsystem,
     _sources: HashMap<String, AudioSource>,
+    _opened: bool,
 
 }
 
@@ -59,22 +60,27 @@ impl Audio {
 
         let audio_subsystem = ctx.context.audio().unwrap(); 
 
-        let frequency = 44_100;
-        let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
-        let channels = DEFAULT_CHANNELS; // Stereo
-        let chunk_size = 1_024;
-        
-        sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
-        let mixer = sdl2::mixer::init(InitFlag::all()).unwrap();
 
+        let mixer = sdl2::mixer::init(InitFlag::all()).unwrap();
         Self {
+
             _mixer: mixer,
             _sources: HashMap::new(),
             _audio_subsystem: audio_subsystem,
+            _opened: false,
         }
     }
 
     pub fn new_source(&mut self, filename: &str, audio_manager: &mut AudioManager, audio_type: AudioType) {
+
+        if !self._opened {
+            let frequency = 44_100;
+            let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
+            let channels = DEFAULT_CHANNELS; // Stereo
+            let chunk_size = 1_024;
+            sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
+            self._opened = true;
+        }
 
         let audio_source = AudioSource {
             filename: filename.to_string(),

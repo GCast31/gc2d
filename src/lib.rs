@@ -8,4 +8,5 @@ pub mod graphics;
 pub mod gc2d;
 pub mod image;
 pub mod keyboard;
+pub mod mouse;
 pub mod window;
