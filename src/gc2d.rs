@@ -1,32 +1,7 @@
 
 use std::time::{Instant, Duration};
-
-use sdl2::{audio::{AudioCallback}, mixer::{Music, InitFlag, AUDIO_S16LSB, DEFAULT_CHANNELS} };
-
-use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::{AudioManager, AudioSource}, mouse::Mouse};
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::AudioManager, mouse::Mouse};
 use crate::audio::Audio;
-
-struct SquareWave {
-    phase_inc: f32,
-    phase: f32,
-    volume: f32
-}
-
-impl AudioCallback for SquareWave {
-    type Channel = f32;
-
-    fn callback(&mut self, out: &mut [f32]) {
-        // Generate a square wave
-        for x in out.iter_mut() {
-            *x = if self.phase <= 0.5 {
-                self.volume
-            } else {
-                -self.volume
-            };
-            self.phase = (self.phase + self.phase_inc) % 1.0;
-        }
-    }
-}
 
 pub struct Gc2d {
    _context: Context,
@@ -145,7 +120,7 @@ impl Gc2d {
             // End
             self.graphics.end_draw();
             
-            // Limit FPS
+            // Limit FPS (todo : not optimized ...)
             if self.max_fps > 0 {
                 ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / self.max_fps));
             }

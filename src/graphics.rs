@@ -1,6 +1,6 @@
 
-use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext, rect::Rect};
-use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, ImageDescriptions, Image, ImagesManager}};
+use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
+use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, Image, ImagesManager, Quad}};
 
 
 pub type FontsCreator = TextureCreator<WindowContext>;
@@ -238,16 +238,19 @@ impl Graphics {
         self.images.new_image(filename)
     }
 
-    pub fn draw(&mut self, filename: &str, x: f32, y: f32, angle: f64) {
-        self.draw_image(ImageType::ImageFromFile(String::from(filename)), None, x, y, angle, 1f32, 1f32, 0f32, 0f32);
+    pub fn draw(&mut self, filename: &str, quad: Option<Quad>, x: f32, y: f32, angle: f64) {
+        self.draw_image(ImageType::ImageFromFile(String::from(filename), quad), x, y, angle, 1f32, 1f32, 0f32, 0f32);
     }
 
-    pub(crate) fn draw_image(&mut self, image_type: ImageType, image: Option<&Image>, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32) {
+    pub fn draw_full(&mut self, filename: &str, quad: Option<Quad>, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32) {
+        self.draw_image(ImageType::ImageFromFile(String::from(filename), quad), x, y, angle, scale_x, scale_y, origin_x, origin_y);
+    }
 
-        let image = match (image_type ,image ) {
-            (_, Some(i)) => Some(i),
-            (ImageType::ImageFromFile(f), _) => self.images.get_image(f.as_str()),
-            (_, _) => return,
+    fn draw_image(&mut self, image_type: ImageType, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32) {
+
+        let (image, quad) = match image_type {
+            ImageType::FromTexture(i) => (Some(i), None),
+            ImageType::ImageFromFile(f, quad) => (self.images.get_image(f.as_str()), quad),
         };
 
         if image.is_none() {
@@ -256,17 +259,17 @@ impl Graphics {
 
         let image = image.unwrap();
 
-        let mut scalex = scale_x * self.actual_sx;
-        let mut scaley = scale_y * self.actual_sy;
+        let scalex = scale_x * self.actual_sx;
+        let scaley = scale_y * self.actual_sy;
 
-        let mut dst = sdl2::rect::Rect::new((x * self.actual_sx)as i32,(y * self.actual_sy) as i32, image.get_width() as u32, image.get_height() as u32);
+        let mut dst = sdl2::rect::Rect::new((x * self.actual_sx)as i32,(y * self.actual_sy) as i32, image.width as u32, image.height as u32);
         dst.h = ((dst.h as f32) * scalex) as i32;
         dst.w = ((dst.w as f32) * scaley) as i32;
 
         let mut src: Option<sdl2::rect::Rect> = Option::None;
 
-        if let Some(q) = image.get_quad() {
-            let rect = sdl2::rect::Rect::new((q.get_x() * self.actual_sx) as i32, (q.get_y() * self.actual_sy) as i32 , q.get_width() as u32, q.get_height() as u32);
+        if let Some(q) = quad {
+            let rect = sdl2::rect::Rect::new((q.x * self.actual_sx) as i32, (q.y * self.actual_sy) as i32 , q.width as u32, q.height as u32);
             src = Some(rect);
             dst.h = ((rect.h as f32) * scalex) as i32;
             dst.w = ((rect.w as f32) * scaley) as i32;
@@ -279,7 +282,6 @@ impl Graphics {
 
             let flip_h = 
                 if scalex < 0. {
-                    scalex *= -1.;
                     true
                 } 
                 else { 
@@ -288,7 +290,6 @@ impl Graphics {
 
             let flip_v = 
                 if scaley < 0. {
-                    scaley *= -1.;
                     true
                 } 
                 else { 
@@ -340,10 +341,10 @@ impl Graphics {
            let texture = fonts.get_texture(&font_creator, &font, text, &l_color); 
          
            // Create an image from Texture
-           let mut image = Image::from_texture(texture.unwrap());
+           let image = Image::from_texture(texture.unwrap());
 
            // Draw text
-           self.draw_image(ImageType::FromTexture, Some(&image), x, y, angle, scale_x, scale_y, origin_x, origin_y);
+           self.draw_image(ImageType::FromTexture(&image), x, y, angle, scale_x, scale_y, origin_x, origin_y);
         }
     }
     

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sdl2::{EventPump, keyboard::{Scancode, Keycode}};
+use sdl2::{EventPump, keyboard::Keycode};
 
 #[derive(PartialEq, Eq, Clone)]
 #[derive(Hash)]

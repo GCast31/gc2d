@@ -4,37 +4,15 @@ use std::collections::HashMap;
 /*================================================================
  *                         _ I M A G E
  *================================================================*/
- pub trait ImageDescriptions {
-    fn get_quad(&self) -> Option<Quad>;
-    fn get_width(&self) -> f32;
-    fn get_height(&self) -> f32;
-}
-
-#[derive(Clone)]
-pub(crate) enum ImageType {
-    ImageFromFile(String),
-    FromTexture,
+pub(crate) enum ImageType<'a> {
+    ImageFromFile(String, Option<Quad>),
+    FromTexture(&'a Image),
 }
 
  pub struct Image {
-    width: f32,
-    height: f32,
+    pub width: f32,
+    pub height: f32,
     pub(crate) texture: sdl2::render::Texture,
-}
-
-impl ImageDescriptions for Image {
-
-    fn get_quad(&self) -> Option<Quad> {
-        Option::None
-    }
-    
-    fn get_width(&self) -> f32 {
-        self.width
-    }
-
-    fn get_height(&self) -> f32 {
-        self.height
-    }
 }
 
 impl Image {
@@ -53,41 +31,10 @@ impl Image {
  * Quad : A part of an image
  */
 pub struct Quad {
-    filename: String,
-    x: f32,
-    y: f32,
-    width: f32,
-    height: f32,
-}
-
-impl Quad {
-    pub fn new(filename: String, x: f32, y: f32, width: f32, height: f32) -> Quad {
-        Quad { filename, x, y, width, height }
-    }
-    pub fn get_x(&self) -> f32 {
-        self.x
-    }
-    pub fn get_y(&self) -> f32 {
-        self.y
-    }
-}
-
-impl ImageDescriptions for Quad {
-    fn get_quad(&self) -> Option<Quad> {
-        Some(Quad {
-            filename: self.filename.clone(),
-            height: self.height,
-            width: self.width,
-            x: self.x,
-            y: self.y,
-        })
-    }
-    fn get_width(&self) -> f32 {
-        self.width
-    }
-    fn get_height(&self) -> f32 {
-        self.height
-    }
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
 }
 
 //=======================================================================

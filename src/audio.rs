@@ -1,7 +1,7 @@
 
 use std::collections::HashMap;
 
-use sdl2::{mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, InitFlag, Sdl2MixerContext, Music, Channel}, AudioSubsystem};
+use sdl2::{mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, InitFlag, Sdl2MixerContext, Music}, AudioSubsystem};
 
 use crate::context::Context;
 
