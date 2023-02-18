@@ -30,6 +30,7 @@ impl Image {
 /*
  * Quad : A part of an image
  */
+#[derive(Clone, Copy)]
 pub struct Quad {
     pub x: f32,
     pub y: f32,
