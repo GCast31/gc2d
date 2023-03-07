@@ -320,7 +320,20 @@ impl Graphics {
                 )
                 .unwrap();
     }
+    
+    /*
+     * get_image_height()
+     */
+    pub fn get_image_height(&self, filename: &str) -> f32 {
+        self.get_image_height(filename)
+    }
 
+    /*
+     * get_image_width())
+     */
+    pub fn get_image_width(&self, filename: &str) -> f32 {
+        self.get_image_width(filename)
+    }
     //=======================================================================
     //                             FONTS
     //=======================================================================
