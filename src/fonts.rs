@@ -13,6 +13,11 @@ pub struct Font {
     pub point_size: u16,
 }
 
+pub struct FontSize {
+  pub height: u32,
+  pub width: u32,
+}
+
 pub struct FontsManager<'ttf, 'rwops: 'ttf> {
     fonts: HashMap<Font, Box<sdl2::ttf::Font<'ttf, 'rwops>>>,
 }
@@ -58,6 +63,34 @@ impl<'ttf, 'rwops> FontsManager<'ttf, 'rwops> {
       }
 
       return Option::None;
+    }
+
+    pub(crate) fn get_font_height(&self, text: &str, font_key: &Font) -> Gc2dResult<u32> {
+      if let Ok(size) = self.get_font_size(text, font_key) {
+        Ok(size.height)
+      } else {
+        Err(String::from("Font size not found"))
+      }
+    }
+
+    pub(crate) fn get_font_width(&self, text: &str, font_key: &Font) -> Gc2dResult<u32>  {
+      if let Ok(size) = self.get_font_size(text, font_key) {
+        Ok(size.width)
+      } else {
+        Err(String::from("Font size not found"))
+      }
+    }
+
+    pub(crate) fn get_font_size(&self, text: &str, font_key: &Font) -> Gc2dResult<FontSize>  {
+      if let Some(detail) = self.fonts.get(&font_key) {
+        let font = detail.as_ref();
+        if let Ok(size) = font.size_of(text) {
+          return Ok(FontSize { height: size.1, width: size.0 });
+        } else {
+          return Err(String::from("Font size not found"));
+        }
+      }
+      Err(String::from("Font not found"))
     }
 
 }
