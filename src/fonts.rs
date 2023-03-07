@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use sdl2::{render::{Texture, TextureCreator}, ttf::Sdl2TtfContext};
 
-use crate::color::Color;
+use crate::{color::Color, gc2d::Gc2dResult};
 
 pub type FontContext<'a> = sdl2::ttf::Sdl2TtfContext;
 pub type FontStyle = sdl2::ttf::FontStyle;
@@ -24,7 +24,7 @@ impl<'ttf, 'rwops> FontsManager<'ttf, 'rwops> {
         }
     }
 
-    pub(crate) fn new_font(&mut self, ttf_context: &'ttf Sdl2TtfContext, font_key: Font) -> Result<(), String>{
+    pub(crate) fn new_font(&mut self, ttf_context: &'ttf Sdl2TtfContext, font_key: Font) -> Gc2dResult<()> {
      
       let font = ttf_context.load_font(font_key.filename.clone(), font_key.point_size)?;
       

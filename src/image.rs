@@ -1,6 +1,8 @@
 use sdl2::image::LoadTexture;
 use std::collections::HashMap;
 
+use crate::gc2d::Gc2dResult;
+
 /*================================================================
  *                         _ I M A G E
  *================================================================*/
@@ -65,7 +67,7 @@ impl ImagesManager {
      * 
      * @Brief : Try to load a new image in the images manager
      */
-    pub(crate) fn new_image(&mut self, filename: &str) -> Result<(), String> {
+    pub(crate) fn new_image(&mut self, filename: &str) -> Gc2dResult<()> {
 
         if let Some(_) = self.images.get_mut(&filename.to_string()) {
             return Ok(());

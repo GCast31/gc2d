@@ -1,6 +1,6 @@
 
 use sdl2::{render::{Canvas, TextureCreator}, video::WindowContext};
-use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, Image, ImagesManager, Quad}};
+use crate::{context::Context, color::Color, fonts::{FontsManager, Font}, image::{ImageType, Image, ImagesManager, Quad}, gc2d::Gc2dResult};
 
 
 pub type FontsCreator = TextureCreator<WindowContext>;
@@ -238,7 +238,7 @@ impl Graphics {
     //=======================================================================
     //                             IMAGES
     //=======================================================================
-    pub fn new_image(&mut self, filename: &str) -> Result<(), String> {
+    pub fn new_image(&mut self, filename: &str) -> Gc2dResult<()> {
         self.images.new_image(filename)
     }
 

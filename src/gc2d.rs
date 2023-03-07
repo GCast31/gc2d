@@ -1,7 +1,9 @@
 
 use std::time::{Instant, Duration};
-use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop, EventError}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::AudioManager, mouse::Mouse};
+use crate::{window::Window, graphics::Graphics, event::{Event, EventLoop}, context::Context, fonts::FontsManager, keyboard::Keyboard, audio::AudioManager, mouse::Mouse};
 use crate::audio::Audio;
+
+pub type Gc2dResult<T> = Result<T, String>;
 
 pub struct Gc2d {
    _context: Context,
@@ -44,7 +46,7 @@ impl Gc2d {
     }
 
 
-    pub fn run(&mut self, mut game: impl EventLoop) -> Result<(), EventError>{
+    pub fn run(&mut self, mut game: impl EventLoop) -> Gc2dResult<()>{
 
         // Initialize font context
         let ttf_context = sdl2::ttf::init().unwrap();
