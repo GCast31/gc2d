@@ -79,6 +79,14 @@ impl Graphics {
     }
 
 
+    pub fn get_height(&self) -> f32 {
+        self.canvas.window().size().1 as f32
+    }
+
+    pub fn get_width(&self) -> f32 {
+        self.canvas.window().size().0 as f32
+    }
+
     /***********************************************************
      * get_fonts_creator
      *
