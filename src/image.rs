@@ -107,4 +107,26 @@ impl ImagesManager {
     pub fn get_image(&self, filename: &str) -> Option<&Image> {
         self.images.get(&filename.to_string())
     }
+
+    /*
+     * get_image_height()
+     */
+    pub fn get_image_height(&self, filename: &str) -> f32 {
+        if let Some(image) = self.images.get(&filename.to_string()) {
+            image.height
+        } else {
+            0.
+        }
+    }
+
+    /*
+     * get_image_width())
+     */
+    pub fn get_image_width(&self, filename: &str) -> f32 {
+        if let Some(image) = self.images.get(&filename.to_string()) {
+            image.width
+        } else {
+            0.
+        }
+    }
 }
