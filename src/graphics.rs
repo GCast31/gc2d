@@ -329,20 +329,6 @@ impl Graphics {
         self.actual_font = font; 
     }
 
-    pub fn get_text_height(&self, text: &str, fonts: &FontsManager, filename: String, point_size: u16) -> Result<u32, String> {
-        fonts.get_font_height(text, &Font {
-            filename: filename.clone(),
-            point_size
-        })
-    }
-
-    pub fn get_text_width(&self, text: &str, fonts: &FontsManager, filename: String, point_size: u16) -> Result<u32, String> {
-        fonts.get_font_width(text, &Font {
-            filename: filename.clone(),
-            point_size
-        })
-    }
-
     pub fn print_full(&mut self, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>, fonts: &mut FontsManager) {
         // Only if font is set
         if let Some(font) = &self.actual_font {
