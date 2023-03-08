@@ -367,23 +367,24 @@ impl Graphics {
     pub fn print_full(&mut self, text: String, x: f32, y: f32, angle: f64, scale_x: f32, scale_y: f32, origin_x: f32, origin_y: f32, color: Option<Color>, fonts: &mut FontsManager) {
         // Only if font is set
         if let Some(font) = &self.actual_font {
+            if !text.is_empty() {
+                // Witch color ?
+                let l_color = if let Some(color) = color {
+                                        color 
+                                    } else {
+                                        self.actual_color
+                                    };
 
-            // Witch color ?
-            let l_color = if let Some(color) = color {
-                                    color 
-                                } else {
-                                    self.actual_color
-                                };
+            // Create an texture from Text
+            let font_creator = self.get_fonts_creator();
+            let texture = fonts.get_texture(&font_creator, &font, text, &l_color); 
+            
+            // Create an image from Texture
+            let image = Image::from_texture(texture.unwrap());
 
-           // Create an texture from Text
-           let font_creator = self.get_fonts_creator();
-           let texture = fonts.get_texture(&font_creator, &font, text, &l_color); 
-         
-           // Create an image from Texture
-           let image = Image::from_texture(texture.unwrap());
-
-           // Draw text
-           self.draw_image(ImageType::FromTexture(&image), x, y, angle, scale_x, scale_y, origin_x, origin_y);
+            // Draw text
+            self.draw_image(ImageType::FromTexture(&image), x, y, angle, scale_x, scale_y, origin_x, origin_y);
+            }
         }
     }
     
