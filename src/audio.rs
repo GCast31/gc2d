@@ -1,6 +1,7 @@
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File, io::BufReader};
 
+use rodio::{OutputStream, OutputStreamHandle, Sink, Decoder, source::Source};
 use sdl2::{mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, InitFlag, Sdl2MixerContext, Music}, AudioSubsystem};
 
 use crate::context::Context;
@@ -13,12 +14,12 @@ pub struct AudioSource {
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub enum AudioType {
-    Stream,
-    Static,
+    Music,
+    Effect,
 }
 
 pub struct AudioManager<'a> {
-    audios: HashMap<AudioSource, Box<Music<'a>>>,
+    audios: HashMap<AudioSource, Option<Box<Music<'a>>>>,
 }
 
 impl<'a> AudioManager<'a> {
@@ -32,10 +33,14 @@ impl<'a> AudioManager<'a> {
 
         if !self.audios.contains_key(&audio) {
             let filename = audio.filename.clone();
-            let music = Music::from_file(filename).unwrap();
+            let music = if audio.audio_type == AudioType::Effect {
+                Some(Box::new(Music::from_file(filename).unwrap())) }
+                else {
+                    None
+                };
             self.audios.insert(
                 audio,
-                Box::new(music),
+                music,
             );
         }
     }
@@ -53,6 +58,10 @@ pub struct Audio {
     _sources: HashMap<String, AudioSource>,
     _opened: bool,
 
+    _stream: OutputStream,
+    _stream_handler: OutputStreamHandle,
+    _stream_sink: Sink,
+
 }
 
 impl Audio {
@@ -61,6 +70,9 @@ impl Audio {
         let audio_subsystem = ctx.context.audio().unwrap(); 
 
 
+       let (stream, stream_handler) = OutputStream::try_default().unwrap();
+       let sink = Sink::try_new(&stream_handler).unwrap();
+
         let mixer = sdl2::mixer::init(InitFlag::all()).unwrap();
         Self {
 
@@ -68,6 +80,10 @@ impl Audio {
             _sources: HashMap::new(),
             _audio_subsystem: audio_subsystem,
             _opened: false,
+
+            _stream: stream,
+            _stream_handler: stream_handler,
+            _stream_sink: sink,
         }
     }
 
@@ -91,16 +107,24 @@ impl Audio {
         self._sources.insert(filename.to_string(), audio_source);
     }
 
-    pub fn play(&mut self, audio_manager: &AudioManager, filename: &str, loops: i32) {
+    pub fn play(&mut self, audio_manager: &AudioManager, filename: &str) {
         
         if let Some(audio_source) = self._sources.get(&filename.to_string()) {
             match audio_source.audio_type {
-                AudioType::Stream => {
-                    if let Some(audio) = audio_manager.audios.get(&audio_source) {
-                        audio.play(loops).unwrap();
-                    }
+                AudioType::Music => {
+                    self._stream_sink.clear();
+
+                    let file = BufReader::new(File::open(&filename).unwrap());
+                    let source = Decoder::new(file).unwrap();
+                    self._stream_handler.play_raw(source.convert_samples()).unwrap();
+
                 },
-                AudioType::Static => {
+                AudioType::Effect => {
+                    if let Some(infos) = audio_manager.audios.get(&audio_source) {
+                        if let Some(audio) = infos {
+                            audio.play(0).unwrap();
+                        }
+                    }
                 },
             }
         }

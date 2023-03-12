@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 time = "0.3.17"
+rodio = "*"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

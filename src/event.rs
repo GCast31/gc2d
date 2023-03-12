@@ -17,11 +17,11 @@ pub trait EventLoop {
         Ok(())
     }
 
-    fn key_pressed(&mut self, gc2d: &mut Gc2d, key: KeyCode) -> Gc2dResult<()> {
+    fn key_pressed(&mut self, gc2d: &mut Gc2d, key: KeyCode, audio_manager: &mut AudioManager) -> Gc2dResult<()> {
         Ok(())
     }
 
-    fn key_released(&mut self, gc2d: &mut Gc2d, key: KeyCode) -> Gc2dResult<()> {
+    fn key_released(&mut self, gc2d: &mut Gc2d, key: KeyCode, audio_manager: &mut AudioManager) -> Gc2dResult<()> {
         Ok(())
     }
 }

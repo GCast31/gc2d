@@ -48,6 +48,7 @@ impl Gc2d {
 
     pub fn run(&mut self, mut game: impl EventLoop) -> Gc2dResult<()>{
 
+
         // Initialize font context
         let ttf_context = sdl2::ttf::init().unwrap();
 
@@ -103,12 +104,12 @@ impl Gc2d {
 
             // Key Just pressed
             for key in self.keyboard.get_keys_just_pressed() {
-                game.key_pressed(self, key)?;
+                game.key_pressed(self, key, &mut audio_manager)?;
             }
 
             // Key Just released
             for key in self.keyboard.get_keys_just_released() {
-                game.key_released(self, key)?;
+                game.key_released(self, key, &mut audio_manager)?;
             }
     
             // Update
